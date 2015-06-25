@@ -1,6 +1,17 @@
 # SitecoreCommon.Helpers
 Sitecore helpers
 
+###Installation
+By nuget:
+```
+Install-Package SitecoreCommon.Helpers 
+```
+
+In code file add using:
+```C#
+using SitecoreCommon.Helpers;
+```
+
 ##PublishingHelper
 Helps set publishing directly from code
 
@@ -19,3 +30,23 @@ PublishingHelper.PublishItem(SitecoreItem, Sitecore.Publishing.PublishMode.Full)
 
 // - ...or Sitecore Item ID string. Second parameter is PublishMode -
 PublishingHelper.PublishItem("{9C59A610-537C-48A7-97B8-AB4B19DFBB32}", Sitecore.Publishing.PublishMode.Full);
+```
+
+##FieldsHelper
+Helps get fields values
+
+Usage:
+
+```C#
+// - Gets value from field 'Key' in Sitecore item 'item' -
+String testValue = FieldsHelper.GetValue(item, "Key");
+
+// - Gets value from field 'Key' in Sitecore item 'item' - if field is empty return value specified in third parameter -
+String testValue2 = FieldsHelper.GetValue(item, "Key", "Default value");
+
+// - Cheks if specified field "Key" exists in Sitecore Item 'item' -
+bool testIfFieldExists = FieldsHelper.HasField(item, "Key");
+
+// - Cheks if specified field "Key" exists in Sitecore Item 'item' and is no empty -
+bool testIfFieldExistsAndIsNotEmpty = FieldsHelper.HasNotEmptyField(item, "Key");
+```
