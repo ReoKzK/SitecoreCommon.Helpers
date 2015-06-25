@@ -15,7 +15,7 @@ PublishingHelper.SetUpMasterDatabase();
 PublishingHelper.SetUpPublicationDatabases(new List<String> { "web", "pub" });
 
 // - Now we can publish items. First parameter can be sitecore Item...
-PublishingHelper.PublishItem(Astra, Sitecore.Publishing.PublishMode.Full);
+PublishingHelper.PublishItem(SitecoreItem, Sitecore.Publishing.PublishMode.Full);
 
 // - ...or Sitecore Item ID string. Second parameter is PublishMode -
 PublishingHelper.PublishItem("{9C59A610-537C-48A7-97B8-AB4B19DFBB32}", Sitecore.Publishing.PublishMode.Full);
