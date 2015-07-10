@@ -144,9 +144,14 @@ namespace SitecoreCommon.Tests.Helpers
 
                 Assert.IsTrue(FieldsHelper.GetValue(item, FieldNames.TextField) == "Value 1");
                 Assert.IsTrue(FieldsHelper.GetValue(item, FieldNames.EmptyField) == "");
+
                 Assert.IsTrue(FieldsHelper.GetValue(item, FieldNames.NotExistingField, "Default value") == "Default value");
+                Assert.IsTrue(FieldsHelper.GetValue(item, FieldNames.TextField, "Default value") == "Value 1");
+                Assert.IsTrue(FieldsHelper.GetValue(item, FieldNames.EmptyField, "Default value") == "");
 
                 Assert.IsTrue(FieldsHelper.GetValueOrDefaultIfEmpty(item, FieldNames.EmptyField, "Default value") == "Default value");
+                Assert.IsTrue(FieldsHelper.GetValueOrDefaultIfEmpty(item, FieldNames.TextField, "Default value") == "Value 1");
+                Assert.IsTrue(FieldsHelper.GetValueOrDefaultIfEmpty(item, FieldNames.NotExistingField, "Default value") == "Default value");
             }
         }
 

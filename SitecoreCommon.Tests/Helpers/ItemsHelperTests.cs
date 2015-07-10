@@ -66,6 +66,7 @@ namespace SitecoreCommon.Tests.Helpers
                 { "Świeże bułeczki",                "Swieze-buleczki" },
                 { "Oferta",                         "Oferta" },
                 { "nc+",                            "nc-" },
+                { "Ça me plaît",                    "Ca-me-plait" }
                 //{ "slashes/test\\new",              "slashes-test-new" },
             };
 

@@ -70,31 +70,13 @@ namespace SitecoreCommon.Helpers
         /// </returns>
         public static String GetValidItemName(String nameToCheck)
         {
-            var name = ItemUtil.ProposeValidItemName(nameToCheck);
-
-            name = name.Replace('ą', 'a');
-            name = name.Replace('ć', 'c');
-            name = name.Replace('ę', 'e');
-            name = name.Replace('ł', 'l');
-            name = name.Replace('ó', 'o');
-            name = name.Replace('ś', 's');
-            name = name.Replace('ż', 'z');
-            name = name.Replace('ź', 'z');
-            name = name.Replace('ń', 'n');
-
-            name = name.Replace('Ą', 'A');
-            name = name.Replace('Ć', 'C');
-            name = name.Replace('Ę', 'E');
-            name = name.Replace('Ł', 'L');
-            name = name.Replace('Ó', 'O');
-            name = name.Replace('Ś', 'S');
-            name = name.Replace('Ż', 'Z');
-            name = name.Replace('Ź', 'Z');
-            name = name.Replace('Ń', 'N');
+            var name = LatinToAscii(nameToCheck);
 
             name = name.Replace(".", String.Empty);
             name = name.Replace('+', '-');
             name = name.Replace(' ', '-');
+            
+            name = ItemUtil.ProposeValidItemName(name);
 
             return name;
         }
