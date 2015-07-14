@@ -34,6 +34,9 @@ namespace SitecoreCommon.Tests.Helpers
             public const String LinkFieldExternal = "Link Field External";
             public const String LinkFieldInternal = "Link Field Internal";
 
+            public const String IntegerField = "Integer Field";
+            public const String FieldWithDoubleValue = "Double Field";
+
             public const String NotExistingField = "Field that does not exist";
         }
 
@@ -76,7 +79,9 @@ namespace SitecoreCommon.Tests.Helpers
                     new Sitecore.FakeDb.DbLinkField(FieldNames.LinkFieldInternal)
                     {
                         LinkType = "internal", Url = "/sitecore/content/TestItemReferenced"
-                    }
+                    },
+                    FieldNames.IntegerField,
+                    FieldNames.FieldWithDoubleValue
                 },
                 new Sitecore.FakeDb.DbItem("TestItemReferenced", referencedItemId)
                 {
@@ -107,7 +112,9 @@ namespace SitecoreCommon.Tests.Helpers
                         new Sitecore.FakeDb.DbLinkField(FieldNames.LinkFieldInternal)
                         {
                             LinkType = "internal", Url = "/sitecore/content/TestItemReferenced", TargetID = referencedItemId
-                        }
+                        },
+                        { FieldNames.IntegerField, "123" },
+                        { FieldNames.FieldWithDoubleValue, "3.14159265358979" }
                     }
 
                     //String.Format("<link linktype=\"internal\" id=\"{0}\" url=\"{1}\" />", referencedItemId.Guid.ToString(), "/sitecore/content/TestItemReferenced")
@@ -219,6 +226,24 @@ namespace SitecoreCommon.Tests.Helpers
                 Assert.AreEqual(FieldsHelper.GetUrl(item, FieldNames.EmptyField), String.Empty);
 
                 //Assert.AreEqual(FieldsHelper.GetReferenceFieldTargetItemFieldValue(item, FieldNames.LinkFieldInternal, FieldNames.LinkFieldExternal), "http://facebook.com");
+            }
+        }
+
+        /// <summary>
+        /// Tests getting numerical values from Sitecore
+        /// </summary>
+        [Test]
+        public void TestGetNumericalValue()
+        {
+            using (Sitecore.FakeDb.Db masterDb = GenerateFakeDb())
+            {
+                var item = masterDb.GetItem("/sitecore/content/TestItem");
+
+                int integerValue = FieldsHelper.GetInteger(item, FieldNames.IntegerField);
+                double doubleValue = FieldsHelper.GetDouble(item, FieldNames.FieldWithDoubleValue);
+
+                Assert.AreEqual(integerValue, 123);
+                Assert.AreEqual(doubleValue, 3.14159265358979);
             }
         }
     }

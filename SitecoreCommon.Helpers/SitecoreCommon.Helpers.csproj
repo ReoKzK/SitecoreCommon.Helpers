@@ -28,6 +28,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\SitecoreCommon.Helpers.XML</DocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Sitecore.Kernel">
