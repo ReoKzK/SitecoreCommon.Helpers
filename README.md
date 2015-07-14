@@ -61,4 +61,10 @@ var checkboxField = FieldsHelper.GetCheckboxField(item, "Key checkbox");
 
 // - Now let's check it -
 bool isCheckboxFieldChecked = checkboxField != null && checkboxField.Checked;
+
+// - Get integer value from Sitecore -
+int integerValue = FieldsHelper.GetInteger(item, "Integer Field");
+
+// - Get double value from Sitecore -
+double doubleValue = FieldsHelper.GetDouble(item, "Field With Double Value");
 ```
