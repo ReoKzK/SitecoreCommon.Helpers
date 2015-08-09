@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
@@ -426,14 +427,22 @@ namespace SitecoreCommon.Helpers
         /// </summary>
         /// <param name="item">Sitecore Item</param>
         /// <param name="key">Key name</param>
+        /// <param name="format">Double number format</param>
         /// <returns>Specified Double field value if field exists</returns>
-        public static Double GetDouble(Item item, String key)
+        public static Double GetDouble(Item item, String key, NumberFormatInfo format = null)
         {
             Double result = -1.0;
 
             if (HasField(item, key))
             {
-                if (!Double.TryParse(item.Fields[key].Value.Replace('.', ','), out result))
+                // - Read number format info - as default number in format: 120000.123 -
+                format = format ?? new NumberFormatInfo
+                {
+                    NumberDecimalSeparator = ".",
+                    NumberGroupSeparator = "",
+                };
+
+                if (!Double.TryParse(item.Fields[key].Value, NumberStyles.Any, format, out result))
                 {
                     Sitecore.Diagnostics.Log.Warn(
                         String.Format("FieldsHelper: Could not parse field {0} as Double on item {1} ({2}) based on template {3} ({4})",

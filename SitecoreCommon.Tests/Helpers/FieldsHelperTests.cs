@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using Sitecore;
@@ -36,6 +38,7 @@ namespace SitecoreCommon.Tests.Helpers
 
             public const String IntegerField = "Integer Field";
             public const String FieldWithDoubleValue = "Double Field";
+            public const String FieldWithAnotherDoubleValue = "Another Double Field";
 
             public const String NotExistingField = "Field that does not exist";
         }
@@ -81,7 +84,8 @@ namespace SitecoreCommon.Tests.Helpers
                         LinkType = "internal", Url = "/sitecore/content/TestItemReferenced"
                     },
                     FieldNames.IntegerField,
-                    FieldNames.FieldWithDoubleValue
+                    FieldNames.FieldWithDoubleValue,
+                    FieldNames.FieldWithAnotherDoubleValue
                 },
                 new Sitecore.FakeDb.DbItem("TestItemReferenced", referencedItemId)
                 {
@@ -114,7 +118,8 @@ namespace SitecoreCommon.Tests.Helpers
                             LinkType = "internal", Url = "/sitecore/content/TestItemReferenced", TargetID = referencedItemId
                         },
                         { FieldNames.IntegerField, "123" },
-                        { FieldNames.FieldWithDoubleValue, "3.14159265358979" }
+                        { FieldNames.FieldWithDoubleValue, "3.14159265358979" },
+                        { FieldNames.FieldWithAnotherDoubleValue, "100,000.001" }
                     }
 
                     //String.Format("<link linktype=\"internal\" id=\"{0}\" url=\"{1}\" />", referencedItemId.Guid.ToString(), "/sitecore/content/TestItemReferenced")
@@ -230,20 +235,73 @@ namespace SitecoreCommon.Tests.Helpers
         }
 
         /// <summary>
-        /// Tests getting numerical values from Sitecore
+        /// Tests getting integer values from Sitecore
         /// </summary>
         [Test]
-        public void TestGetNumericalValue()
+        public void TestGetIntegerValue()
         {
             using (Sitecore.FakeDb.Db masterDb = GenerateFakeDb())
             {
                 var item = masterDb.GetItem("/sitecore/content/TestItem");
 
                 int integerValue = FieldsHelper.GetInteger(item, FieldNames.IntegerField);
-                double doubleValue = FieldsHelper.GetDouble(item, FieldNames.FieldWithDoubleValue);
-
+                
                 Assert.AreEqual(integerValue, 123);
-                Assert.AreEqual(doubleValue, 3.14159265358979);
+            }
+        }
+
+        /// <summary>
+        /// Tests getting double values from Sitecore
+        /// </summary>
+        [Test]
+        public void TestGetDoubleValue()
+        {
+            using (Sitecore.FakeDb.Db masterDb = GenerateFakeDb())
+            {
+                var item = masterDb.GetItem("/sitecore/content/TestItem");
+                var expectedValue = 3.14159265358979;
+                var expectedAnotherValue = 100000.001;
+
+                // - Get value at default culture -
+                double doubleValueDefaultCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithDoubleValue);
+
+                var defaultCulture = Thread.CurrentThread.CurrentCulture;
+
+                // - Set pl-PL culture -
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("pl-PL");
+                double doubleValuePLCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithDoubleValue);
+
+                // - Set en-US culture -
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-Us");
+                double doubleValueEnUsCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithDoubleValue);
+
+                Assert.AreEqual(doubleValueDefaultCulture, expectedValue);
+                Assert.AreEqual(doubleValuePLCulture, expectedValue);
+                Assert.AreEqual(doubleValueEnUsCulture, expectedValue);
+
+                // - Special number format info -
+                var format = new NumberFormatInfo
+                {
+                    NumberDecimalSeparator = ".",
+                    NumberGroupSeparator = ",",
+                };
+
+                // - Reset default culture -
+                Thread.CurrentThread.CurrentCulture = defaultCulture;
+
+                double doubleAnotherValueDefaultCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithAnotherDoubleValue, format);
+
+                // - Set pl-PL culture -
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("pl-PL");
+                double doubleAnotherValuePLCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithAnotherDoubleValue);
+
+                // - Set en-US culture -
+                Thread.CurrentThread.CurrentCulture = new CultureInfo("en-Us");
+                double doubleAnotherValueEnUsCulture = FieldsHelper.GetDouble(item, FieldNames.FieldWithAnotherDoubleValue);
+
+                Assert.AreEqual(doubleAnotherValueDefaultCulture, expectedAnotherValue);
+                Assert.AreEqual(doubleAnotherValuePLCulture, expectedAnotherValue);
+                Assert.AreEqual(doubleAnotherValueEnUsCulture, expectedAnotherValue);
             }
         }
     }
