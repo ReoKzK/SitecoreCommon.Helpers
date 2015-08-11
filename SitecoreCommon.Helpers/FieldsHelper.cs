@@ -72,7 +72,7 @@ namespace SitecoreCommon.Helpers
         {
             return
                 (
-                // - Brak pola From OR (Jest pole From AND (Pole From ma datę wcześniejszą bądź równą teraźniejszej OR Pole From ma datę pustą))
+                // - If there is no From field OR (There is From field AND (From field has date earlier or equal now OR field From has null date))
                     GetDateField(item, fromKey) == null
                     ||
                     GetDateField(item, fromKey).DateTime.CompareTo(DateTime.Now) <= 0
