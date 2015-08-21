@@ -32,6 +32,8 @@ namespace SitecoreCommon.Tests.Helpers
             public const String DateFieldFrom = "Date Field From";
             public const String DateFieldTo = "Date Field To";
             public const String DateFieldEmpty = "Date Field Empty";
+            public const String DateFieldAnother = "Date Field Another";
+            public const String DateFieldAnother2 = "Date Field Another2";
 
             public const String LinkFieldExternal = "Link Field External";
             public const String LinkFieldInternal = "Link Field Internal";
@@ -78,6 +80,14 @@ namespace SitecoreCommon.Tests.Helpers
                     {
                         Type = "DateTime"
                     },
+                    new Sitecore.FakeDb.DbField(FieldNames.DateFieldAnother)
+                    {
+                        Type = "DateTime"
+                    },
+                    new Sitecore.FakeDb.DbField(FieldNames.DateFieldAnother2)
+                    {
+                        Type = "DateTime"
+                    },
                     FieldNames.LinkFieldExternal,
                     new Sitecore.FakeDb.DbLinkField(FieldNames.LinkFieldInternal)
                     {
@@ -111,6 +121,8 @@ namespace SitecoreCommon.Tests.Helpers
                         { FieldNames.CheckboxFieldUnchecked, "" },
                         { FieldNames.DateFieldFrom, DateUtil.ToIsoDate(DateTime.Now.AddDays(-1)) },
                         { FieldNames.DateFieldTo, DateUtil.ToIsoDate(DateTime.Now.AddDays(1)) },
+                        { FieldNames.DateFieldAnother, "20150821T143143" },
+                        { FieldNames.DateFieldAnother2, "20150821T135808Z" },
                         { FieldNames.DateFieldEmpty, "" },
                         { FieldNames.LinkFieldExternal, "<link linktype=\"external\" url=\"http://google.com\" />" },
                         new Sitecore.FakeDb.DbLinkField(FieldNames.LinkFieldInternal)
@@ -194,6 +206,9 @@ namespace SitecoreCommon.Tests.Helpers
             }
         }
 
+        /// <summary>
+        /// Test getting DateTime values
+        /// </summary>
         [Test]
         public void TestGetDateValue()
         {
@@ -201,9 +216,18 @@ namespace SitecoreCommon.Tests.Helpers
             {
                 var item = masterDb.GetItem("/sitecore/content/TestItem");
 
+                // - Check if today's date are in specified Item date fields range -
+                // <DateTime.Now - 1 ; DateTime.Now + 1>
+                // <DateTime.Now - 1 ; (Empty: Infinity)>
+                // <(Empty: -Infinity) ; DateTime.Now + 1>
+
                 Assert.IsTrue(FieldsHelper.IsActual(item, FieldNames.DateFieldFrom, FieldNames.DateFieldTo));
                 Assert.IsTrue(FieldsHelper.IsActual(item, FieldNames.DateFieldFrom, FieldNames.DateFieldEmpty));
                 Assert.IsTrue(FieldsHelper.IsActual(item, FieldNames.DateFieldEmpty, FieldNames.DateFieldTo));
+
+                // - Check if today's date are not in specified Item date fields range -
+                // <DateTime.Now + 1 ; (Empty: Infinity)>
+                // <(Empty: -Infinity) ; DateTime.Now - 1>
 
                 Assert.IsFalse(FieldsHelper.IsActual(item, FieldNames.DateFieldTo, FieldNames.DateFieldEmpty));
                 Assert.IsFalse(FieldsHelper.IsActual(item, FieldNames.DateFieldEmpty, FieldNames.DateFieldFrom));
@@ -212,6 +236,12 @@ namespace SitecoreCommon.Tests.Helpers
                 var dateFieldTo = FieldsHelper.GetDateField(item, FieldNames.DateFieldTo);
 
                 Assert.IsTrue(dateFieldFrom.DateTime < dateFieldTo.DateTime);
+
+                var dateFieldAnotherValue = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldAnother);
+                var dateFieldAnotherValue2 = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldAnother2, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
+
+                Assert.AreEqual(dateFieldAnotherValue, new DateTime(2015, 8, 21, 12, 31, 43));
+                Assert.AreEqual(dateFieldAnotherValue2, new DateTime(2015, 8, 21, 15, 58, 08));
 
                 var dateFrom = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldFrom);
                 var dateTo = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldTo);

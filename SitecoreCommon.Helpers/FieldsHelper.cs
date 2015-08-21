@@ -381,14 +381,23 @@ namespace SitecoreCommon.Helpers
         /// </summary>
         /// <param name="item">Sitecore Item</param>
         /// <param name="key">Key name</param>
+        /// <param name="timeZone">Time zone in which date should be returned - used only in Sitecore 8</param>
         /// <returns>Specified DateField System.DateTime value if exists</returns>
-        public static DateTime GetDateFieldValue(Item item, String key)
+        public static DateTime GetDateFieldValue(Item item, String key, TimeZoneInfo timeZone = null)
         {
             DateTime result = DateTime.MinValue;
 
-            if (HasField(item, key) && ((DateField)item.Fields[key]).DateTime != null)
+            if (HasField(item, key) && item.Fields[key].Value != String.Empty)
             {
                 result = ((DateField)item.Fields[key]).DateTime;
+
+                // - From Sitecore 8 all dates are stored in UTC time zone and has Z letter -
+                if (item.Fields[key].Value.Contains("Z"))
+                {
+                    timeZone = timeZone ?? TimeZoneInfo.Local;
+
+                    result = TimeZoneInfo.ConvertTimeFromUtc(result, timeZone);
+                }
             }
 
             return result;
