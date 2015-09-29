@@ -240,7 +240,7 @@ namespace SitecoreCommon.Tests.Helpers
                 var dateFieldAnotherValue = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldAnother);
                 var dateFieldAnotherValue2 = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldAnother2, TimeZoneInfo.FindSystemTimeZoneById("Central European Standard Time"));
 
-                Assert.AreEqual(dateFieldAnotherValue, new DateTime(2015, 8, 21, 12, 31, 43));
+                Assert.AreEqual(dateFieldAnotherValue, new DateTime(2015, 8, 21, 14, 31, 43));
                 Assert.AreEqual(dateFieldAnotherValue2, new DateTime(2015, 8, 21, 15, 58, 08));
 
                 var dateFrom = FieldsHelper.GetDateFieldValue(item, FieldNames.DateFieldFrom);

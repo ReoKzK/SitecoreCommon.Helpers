@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using Sitecore;
 using Sitecore.Data.Fields;
 using Sitecore.Data.Items;
 using Sitecore.Links;
@@ -389,7 +390,9 @@ namespace SitecoreCommon.Helpers
 
             if (HasField(item, key) && item.Fields[key].Value != String.Empty)
             {
-                result = ((DateField)item.Fields[key]).DateTime;
+                //result = ((DateField)item.Fields[key]).DateTime;
+
+                result = DateUtil.ParseDateTime(item.Fields[key].Value, result);
 
                 // - From Sitecore 8 all dates are stored in UTC time zone and has Z letter -
                 if (item.Fields[key].Value.Contains("Z"))
