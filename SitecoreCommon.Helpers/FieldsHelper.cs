@@ -244,6 +244,37 @@ namespace SitecoreCommon.Helpers
         }
 
         /// <summary>
+        /// Returns target Item from specified link field 
+        /// </summary>
+        /// <param name="item">Sitecore Item</param>
+        /// <param name="key">Key name</param>
+        /// <returns>Target item from specified link field</returns>
+        public static Item GetInternalLinkFieldTargetItem(Item item, String key)
+        {
+            Item targetItem = null;
+
+            if (HasField(item, key))
+            {
+                if (FieldTypeManager.GetField(item.Fields[key]) is LinkField)
+                {
+                    var linkField = (LinkField)item.Fields[key];
+
+                    if (linkField != null)
+                    {
+                        // - Internal link -
+
+                        if (linkField.IsInternal && linkField.TargetItem != null)
+                        {
+                            targetItem = linkField.TargetItem;
+                        }
+                    }
+                }
+            }
+
+            return targetItem;
+        }
+
+        /// <summary>
         /// Returns specified ImageField
         /// </summary>
         /// <param name="item">Sitecore Item</param>
