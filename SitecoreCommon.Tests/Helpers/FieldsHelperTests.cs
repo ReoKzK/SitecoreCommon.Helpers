@@ -20,6 +20,11 @@ namespace SitecoreCommon.Tests.Helpers
     public class FieldsHelperTests
     {
         /// <summary>
+        /// Common template id
+        /// </summary>
+        private String _commonTemplateId = "{3AD0E3AB-0CC7-41F1-B9FD-5FD9DDEF50B4}";
+
+        /// <summary>
         /// Field names used to test
         /// </summary>
         private static class FieldNames
@@ -51,7 +56,7 @@ namespace SitecoreCommon.Tests.Helpers
         /// <returns></returns>
         private Sitecore.FakeDb.Db GenerateFakeDb()
         {
-            Sitecore.Data.ID templateId = new Sitecore.Data.ID("{3AD0E3AB-0CC7-41F1-B9FD-5FD9DDEF50B4}");
+            Sitecore.Data.ID templateId = new Sitecore.Data.ID(_commonTemplateId);
             Sitecore.Data.ID referencedItemId = new Sitecore.Data.ID();
 
             return new Sitecore.FakeDb.Db("master")

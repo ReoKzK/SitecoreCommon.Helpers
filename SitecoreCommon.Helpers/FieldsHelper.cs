@@ -15,79 +15,141 @@ namespace SitecoreCommon.Helpers
     /// </summary>
     public static class FieldsHelper
     {
+        /// <summary>
+        /// Message used when there is no  specified field
+        /// </summary>
+        private const String MessageNoField = "FieldsHelper: There is no field '{0}' in item {1} ({2}) based on template {3} ({4})";
+
+        #region Common
+
+        private static void LogWarning(String warningMessage, Item item)
+        {
+            Sitecore.Diagnostics.Log.Warn(warningMessage, item);
+        }
+
+        /// <summary>
+        /// Logs warning for "no field" situation
+        /// </summary>
+        /// <param name="item">Item</param>
+        /// <param name="fieldName">Field name</param>
+        private static void LogNoFieldWarning(Item item, String fieldName)
+        {
+            LogWarning(
+                String.Format(MessageNoField,
+                        fieldName,
+                        item.ID.ToString(),
+                        item.Paths.FullPath,
+                        item.TemplateID.ToString(),
+                        item.TemplateName),
+                    item);
+        }
+
+        #endregion Common
+
         #region Check methods
 
         /// <summary>
         /// Checks if Item has specified field
         /// </summary>
         /// <param name="item">Sitecore Item</param>
-        /// <param name="key">Key name</param>
+        /// <param name="fieldName">Field name</param>
         /// <returns>True if Item has specified field, False otherwise</returns>
-        public static bool HasField(Item item, String key)
+        public static bool HasField(Item item, String fieldName)
         {
-            if (item.Fields[key] == null)
-            {
-                Sitecore.Diagnostics.Log.Warn(
-                    String.Format("FieldsHelper: There is no field '{0}' in item {1} ({2}) based on template {3} ({4})",
-                            key,
-                            item.ID.ToString(),
-                            item.Paths.FullPath,
-                            item.TemplateID.ToString(),
-                            item.TemplateName),
-                        item);
-            }
-
-            return (item.Fields[key] != null);
+            return (item.Fields[fieldName] != null);
         }
 
         /// <summary>
         /// Checks if Item has specified field and that field is not empty
         /// </summary>
         /// <param name="item">Sitecore Item</param>
-        /// <param name="key">Key name</param>
+        /// <param name="fieldName">Field name</param>
         /// <returns>True if Item has specified field and that field is not empty, False otherwise</returns>
-        public static bool HasNotEmptyField(Item item, String key)
+        public static bool HasNotEmptyField(Item item, String fieldName)
         {
-            return (HasField(item, key) && item.Fields[key].Value.Length > 0);
+            bool result = false;
+
+            if (HasField(item, fieldName))
+            {
+                if (item.Fields[fieldName].Value.Length > 0)
+                {
+                    result = true;
+                }
+            }
+
+            else
+            {
+                LogNoFieldWarning(item, fieldName);
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Returns true if Item has checked specified CheckboxField
         /// </summary>
         /// <param name="item">Sitecore Item</param>
-        /// <param name="key">Key name</param>
+        /// <param name="fieldName">Field name</param>
         /// <returns>Specified CheckboxField if exists</returns>
-        public static bool HasCheckedCheckboxField(Item item, String key)
+        public static bool HasCheckedCheckboxField(Item item, String fieldName)
         {
-            return HasField(item, key) && ((CheckboxField)item.Fields[key]).Checked;
+            bool result = false;
+
+            if (HasField(item, fieldName))
+            {
+                if (((CheckboxField)item.Fields[fieldName]).Checked)
+                {
+                    result = true;
+                }
+            }
+
+            else
+            {
+                LogNoFieldWarning(item, fieldName);
+            }
+
+            return result;
         }
 
         /// <summary>
         /// Checks if specified Item is actual (between specified date fields)
         /// </summary>
         /// <param name="item">Sitecore Item</param>
-        /// <param name="fromKey">Item from-date-field</param>
-        /// <param name="toKey">Item to-date-field</param>
+        /// <param name="fromFieldName">Item from-date-field</param>
+        /// <param name="toFieldName">Item to-date-field</param>
         /// <returns>True if actual, False otherwise</returns>
-        public static Boolean IsActual(Item item, String fromKey, String toKey)
+        public static Boolean IsInDateRange(Item item, String fromFieldName, String toFieldName)
         {
             return
                 (
                 // - If there is no From field OR (There is From field AND (From field has date earlier or equal now OR field From has null date))
-                    GetDateField(item, fromKey) == null
+                    GetDateField(item, fromFieldName) == null
                     ||
-                    GetDateField(item, fromKey).DateTime.CompareTo(DateTime.Now) <= 0
+                    GetDateField(item, fromFieldName).DateTime.CompareTo(DateTime.Now) <= 0
                     ||
-                    GetDateField(item, fromKey).DateTime.CompareTo(DateTime.MinValue) == 0
+                    GetDateField(item, fromFieldName).DateTime.CompareTo(DateTime.MinValue) == 0
                 )
                 &&
                 (
-                    GetDateField(item, toKey) == null
+                    GetDateField(item, toFieldName) == null
                     ||
-                    GetDateField(item, toKey).DateTime.CompareTo(DateTime.Now) >= 0
+                    GetDateField(item, toFieldName).DateTime.CompareTo(DateTime.Now) >= 0
                     ||
-                    GetDateField(item, toKey).DateTime.CompareTo(DateTime.MinValue) == 0
+                    GetDateField(item, toFieldName).DateTime.CompareTo(DateTime.MinValue) == 0
                 );
+        }
+
+        /// <summary>
+        /// Checks if specified Item is actual (between specified date fields)
+        /// </summary>
+        /// <param name="item">Sitecore Item</param>
+        /// <param name="fromFieldName">Item from-date-field</param>
+        /// <param name="toFieldName">Item to-date-field</param>
+        /// <returns>True if actual, False otherwise</returns>
+        [Obsolete("IsActual is deprecated, please use IsInDateRange instead.")]
+        public static Boolean IsActual(Item item, String fromFieldName, String toFieldName)
+        {
+            return IsInDateRange(item, fromFieldName, toFieldName);
         }
 
         #endregion Check methods
